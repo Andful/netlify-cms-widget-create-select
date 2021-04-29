@@ -1,14 +1,14 @@
-import AsyncSelectControl from './Control';
-import AsyncSelectPreview from './Preview';
+import CreatableSelectControl from './Control';
+import CreatableSelectPreview from './Preview';
 
 if (typeof window !== 'undefined') {
-  window.AsyncSelectControl = AsyncSelectControl;
-  window.AsyncSelectPreview = AsyncSelectPreview;
+  window.AsyncSelectControl = CreatableSelectControl;
+  window.AsyncSelectPreview = CreatableSelectPreview;
 }
 
 const exportObject = {
-  AsyncSelectControl,
-  AsyncSelectPreview,
+  CreatableSelectControl,
+  CreatableSelectPreview,
 };
 
 export default exportObject;

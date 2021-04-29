@@ -1,7 +1,7 @@
 import './bootstrap.js';
 import CMS, { init } from 'netlify-cms';
 import 'netlify-cms/dist/cms.css';
-import AsyncSelectWidget from '../src';
+import CreatableSelectWidget from '../src';
 
 const config = {
   backend: {
@@ -22,15 +22,15 @@ const config = {
             {
               name: 'test_widget',
               label: 'Test Widget',
-              widget: 'async-select',
+              widget: 'create-select',
               url: 'https://jsonplaceholder.typicode.com/users',
-              valueField: 'id',
-              displayField: 'name',
+              value_field: 'id',
+              display_field: 'name',
             },
             {
               name: 'test_widget_2',
               label: 'Test Widget 2',
-              widget: 'async-select',
+              widget: 'create-select',
               multiple: true,
               url: 'https://jsonplaceholder.typicode.com/users',
               valueField: 'id',
@@ -40,7 +40,7 @@ const config = {
             {
               name: 'test_widget_3',
               label: 'Test Widget 3',
-              widget: 'async-select',
+              widget: 'create-select',
               multiple: true,
               url: 'https://jsonplaceholder.typicode.com/users',
               valueField: 'id',
@@ -91,9 +91,9 @@ const config = {
 };
 
 CMS.registerWidget(
-  'async-select',
-  AsyncSelectWidget.AsyncSelectControl,
-  AsyncSelectWidget.AsyncSelectPreview
+  'create-select',
+  CreatableSelectWidget.CreatableSelectControl,
+  CreatableSelectWidget.CreatableSelectPreview
 );
 
 init({ config });
