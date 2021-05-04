@@ -1,6 +1,6 @@
 # netlify-cms-widget-create-select
 
-[Check out a demo!](https://andful.github.io/netlify-cms-widget-create-select)
+[Check out a demo!](https://netlify-cms-widget-create-select.netlify.app/#/collections/test/entries/test)
 
 A simple create select widget for netlify-cms which allows creating entries. The create select widget's entries are up to date to the last website build. The create select can be populated by plain text file, json file, RSS feed or HTML page. 
 
