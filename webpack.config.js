@@ -1,5 +1,6 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyPlugin = require("copy-webpack-plugin");
 
 const developmentConfig = {
   mode: 'development',
@@ -43,6 +44,11 @@ const developmentConfig = {
   },
   plugins: [
     new HtmlWebpackPlugin(),
+    new CopyPlugin({
+      patterns: [
+        { from: path.resolve(__dirname,'dev/data/*'), to: path.resolve(__dirname,'public') },
+      ],
+    }),
   ],
   devtool: 'eval-source-map',
 }

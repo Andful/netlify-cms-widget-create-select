@@ -1,30 +1,30 @@
-# netlify-cms-widget-select-async
+# netlify-cms-widget-taxonomy-select
 
 [Check out a demo!](https://netlify-cms-widget-select-async.netlify.com/demo)
 
-A simple async select widget for netlify-cms which can populate entries from a valid endpoint.  Allows for sending custom headers, data/value fields and transformations.
+A simple create select widget for netlify-cms which allows creating entries. The create select widget's entries are up to date to the last website build. The create select can be populated by plain text file, json file, RSS feed or HTML page. 
 
 ## Install
 
 As an npm package:
 
 ```shell
-npm install --save netlify-cms-widget-async-select
+npm install --save netlify-cms-widget-create-select
 ```
 
 ```js
-import { Control as asyncSelectControl } from 'netlify-cms-widget-async-select'
+import { CreatableSelectControl, CreatableSelectPreview } from 'netlify-cms-widget-create-select'
 
-CMS.registerWidget('async-select', asyncSelectControl)
+CMS.registerWidget('create-select', CreatableSelectControl, CreatableSelectPreview);
 ```
 
 Via `script` tag:
 
 ```html
-<script src="https://unpkg.com/netlify-cms-widget-async-select@^1.0.0"></script>
+<script src="https://unpkg.com/netlify-cms-widget-create-select@^1.0.0"></script>
 
 <script>
-  CMS.registerWidget('async-select', window.AsyncSelectControl, window.AsyncSelectPreview)
+  CMS.registerWidget('create-select', window.CreatableSelectControl, window.CreatableSelectPreview)
 </script>
 ```
 
@@ -37,7 +37,7 @@ Add to your Netlify CMS configuration:
       - { 
           name: 'test_widget',
           label: 'Test Widget',
-          widget: 'async-select',
+          widget: 'create-select',
           url: 'https://jsonplaceholder.typicode.com/users',
           valueField: 'id',
           displayField: 'name',
@@ -50,9 +50,15 @@ Async-select widgets may have the following properties in addition to the defaul
 
 ---
 
+`mode` - string - **required**
+
+Endpoint file type possible values being `"html"`, `"xml"`, `"json"`, `"plain"`.
+
+---
+
 `url` - string - **required**
 
-The URI of the endpoint which to request data to populate the select options.
+The URI of the endpoint which to request the file to populate the select options.
 
 ---
 
@@ -70,9 +76,7 @@ Field in the data response which will be mapped to the display text of the netli
 
 ---
 
-`dataKey` - string - **optional** 
-
-default: `valueField`
+`dataKey` - string - **optional (required for modes `"html"` and `"xml"`)** 
 
 Field in the data response which will be used for the source of the data.  
 
@@ -98,54 +102,7 @@ Example:
 
 ---
 
-`headers` - object - **optional** 
 
-default: `{}`
-
-Key-value object of HTTP headers to pass to the endpoint.
-
-Example:
-```javascript
-{
-  'Content-Type': 'application/json',
-  ...
-}
-```
----
-
-`method` - string - **optional** 
-
-default: `GET`
-
-HTTP request method to use when making call to endpoint.
-
----
-
-`body` - **optional** 
-
-default: `undefined`
-
-Body to send in request to endpoint.
-
----
-
-`filter` - function - **optional** 
-
-default: `undefined`
-
-Function which receives parameter `entry` (Immutable.js Map) which is run on each item returned from endpoint.  Similar to `Array.prototype.filter` this will reject anything which does not return truthy.
-
-Example: 
-
-```javascript
-filter: (entry) => {
-  return entry.get('id') % 2;
-}
-```
-
----
-
-Better documentation coming soon.
 
 ## Support
 
