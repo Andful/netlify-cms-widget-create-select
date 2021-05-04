@@ -46,7 +46,7 @@ Add to your Netlify CMS configuration:
 
 ## Configuration
 
-Async-select widgets may have the following properties in addition to the defaults used by netlity.
+Create-select widgets may have the following properties in addition to the defaults used by netlity.
 
 ---
 
@@ -106,4 +106,4 @@ Example:
 
 ## Support
 
-For help with this widget, open an [issue](https://github.com/chrisboustead/netlify-cms-widget-async-select) or ask the Netlify CMS community in [Gitter](https://gitter.im/netlify/netlifycms).
+For help with this widget, open an [issue](https://github.com/Andful/netlify-cms-widget-create-select) or ask the Netlify CMS community in [Gitter](https://gitter.im/netlify/netlifycms).
