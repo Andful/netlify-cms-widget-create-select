@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Creatable } from 'react-select';
-import { fromJS, OrderedMap, toJSON } from 'immutable';
+import { fromJS, OrderedMap } from 'immutable';
 import { isNumber } from 'lodash';
 import { reactSelectStyles } from 'netlify-cms-ui-default';
 
@@ -23,7 +23,7 @@ export default class Control extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { isLoading: true, options: [] };
+    this.state = { isLoading: true, options: OrderedMap() };
   }
 
   isValid = () => {
@@ -134,7 +134,7 @@ export default class Control extends React.Component {
       optionsData = dataKey !== undefined ? json.get(dataKey) : json;
 
       if (valueField === undefined) {
-        getValue = e => toJSON(e);
+        getValue = e => typeof e === "string" ? e : e.toJSON();
       } else if (typeof valueField === 'string') {
         getValue = e => e.getIn(valueField.split('.'));
       } else if (typeof valueField === 'function') {
@@ -144,7 +144,7 @@ export default class Control extends React.Component {
       }
 
       if (displayField === undefined) {
-        getLabel = e => toJSON(e);
+        getLabel = e => typeof e === "string" ? e : e.toJSON();
       } else if (typeof displayField === 'string') {
         getLabel = e => e.getIn(displayField.split('.'));
       } else if (typeof displayField === 'function') {
