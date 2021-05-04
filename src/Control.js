@@ -18,6 +18,7 @@ export default class Control extends React.Component {
     setActiveStyle: PropTypes.func.isRequired,
     setInactiveStyle: PropTypes.func.isRequired,
     hasActiveStyle: PropTypes.func,
+    t: PropTypes.func,
   };
 
   constructor(props) {
@@ -100,7 +101,7 @@ export default class Control extends React.Component {
 
     if (mode === 'xml' || mode === 'html') {
       if (dataKey === undefined) {
-        throw new TypeError('"dataKey" is a required field with "mode: xml"');
+        throw new TypeError('"dataKey" is a required field with "mode: xml" and "mode: html"');
       }
       let parser = new DOMParser();
       let xmlDoc = parser.parseFromString(

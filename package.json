@@ -11,7 +11,7 @@
     "starter",
     "boilerplate"
   ],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/Andful/netlify-cms-widget-create-select",
   "license": "MIT",
   "main": "dist/index.js",
