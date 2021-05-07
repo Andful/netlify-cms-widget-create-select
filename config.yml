@@ -1,0 +1,53 @@
+backend:
+  name: 'test-repo'
+  login: false
+
+media_folder: 'assets'
+
+collections:
+  - name: 'test'
+    label: 'Test'
+    files:
+      - file: 'test.yml'
+        name: 'test'
+        label: 'Test'
+        fields:
+          - name: 'hugo-tags-rss'
+            label: 'Hugo Tags Example Using RSS feed'
+            widget: 'create-select'
+            mode: 'xml'
+            url: 'index.xml'
+            query: 'item title'
+            multiple: true
+
+          - name: 'hugo-tags-sitemap'
+            label: 'Hugo Tags Example Using sitemap'
+            widget: 'create-select'
+            mode: 'xml'
+            url: 'sitemap.xml'
+            query: 'loc'
+            capture: '(?<=https:\/\/themes\.gohugo\.io\/\/theme\/blank\/tags\/).+(?=\/)'
+            multiple: true
+
+          - name: 'jekyll-tags'
+            label: 'Jekyll Tags (HTML)'
+            widget: 'create-select'
+            mode: 'html'
+            url: 'https://mmistakes.github.io/so-simple-theme/tags/'
+            query: '.taxonomy-index > li > a > strong'
+            multiple: true
+            min: 1
+            max: 5
+
+          - name: 'json'
+            label: 'Json'
+            widget: 'create-select'
+            url: 'https://jsonplaceholder.typicode.com/users'
+            attribute: 'name'
+            mode: 'json'
+
+          - name: 'plain'
+            label: 'Plain'
+            widget: 'create-select'
+            url: 'plain-text.txt'
+            mode: 'plain'
