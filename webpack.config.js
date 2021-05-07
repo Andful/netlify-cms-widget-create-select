@@ -4,15 +4,23 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 const developmentConfig = {
   mode: 'development',
-  entry: ['./dev/index.js'],
+  entry: ['./dev/index.ts'],
   output: {
     path: path.resolve(__dirname, 'public'),
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.json'],
+    fallback: { "path": require.resolve("path-browserify") }
   },
   module: {
     rules: [
       {
+        test: /\.tsx?$/,
+        use: "ts-loader",
+      },
+      {
         test: /\.js$/,
-        loader: 'source-map-loader',
+        use: 'source-map-loader',
         enforce: 'pre',
       },
       {
@@ -34,11 +42,11 @@ const developmentConfig = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        use: 'babel-loader',
       },
       {
         test: /\.css$/,
-        loader: ['style-loader', 'css-loader'],
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },
@@ -46,23 +54,37 @@ const developmentConfig = {
     new HtmlWebpackPlugin(),
     new CopyPlugin({
       patterns: [
-        { from: path.resolve(__dirname,'dev/data/*'), to: path.resolve(__dirname,'public') },
+        { from: path.resolve(__dirname,'dev/static/*'), to: path.resolve(__dirname,'public/[name].[ext]') },
       ],
     }),
   ],
-  devtool: 'eval-source-map',
+  devtool: 'inline-source-map',
+  devServer: {
+    contentBase: "./",
+    compress: false,
+    port: 9000,
+    writeToDisk: true
+  },
 }
 
 const productionConfig = {
   mode: 'production',
   entry: {
-      index: ['./src/index.js']
+      index: ['./src/index.ts']
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.json'],
+    fallback: { "path": require.resolve("path-browserify") }
   },
   module: {
     rules: [
       {
+        test: /\.tsx?$/,
+        use: "ts-loader"
+      },
+      {
         test: /\.jsx?$/,
-        loader: 'babel-loader',
+        use: 'babel-loader',
       },
     ],
   },
@@ -70,7 +92,7 @@ const productionConfig = {
   output: {
       path: path.resolve(__dirname, 'dist'),
       filename: '[name].js',
-      library: 'AsyncSelectWidget',
+      library: 'CreateSelectWidget',
       libraryTarget: 'umd',
       libraryExport: 'default',
   }

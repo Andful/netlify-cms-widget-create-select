@@ -1,0 +1,52 @@
+backend:
+  name: 'test-repo'
+  login: false
+
+media_folder: 'assets'
+
+collections:
+  - name: 'test'
+    label: 'Test'
+    files:
+      - file: 'test.yml'
+        name: 'test'
+        label: 'Test'
+        fields:
+          - name: 'html'
+            label: 'HTML Example'
+            widget: 'create-select'
+            mode: 'html'
+            url: 'example.html'
+            query: '#tag-list > .tag'
+            attribute: 'data-tag'
+            multiple: true
+
+          - name: 'hugo-rss-feed'
+            label: 'Hugo RSS feed example'
+            widget: 'create-select'
+            mode: 'xml'
+            url: 'index.xml'
+            query: 'item > title'
+            multiple: true
+
+          - name: 'sitemap'
+            label: 'Sitemap Example'
+            widget: 'create-select'
+            mode: 'xml'
+            url: 'sitemap.xml'
+            query: 'loc'
+            capture: '(?<=https:\/\/www\.example\.com\/tags\/).+(?=\/)'
+            multiple: true
+
+          - name: 'json'
+            label: 'Json'
+            widget: 'create-select'
+            url: 'https://jsonplaceholder.typicode.com/users'
+            attribute: 'name'
+            mode: 'json'
+
+          - name: 'plain'
+            label: 'Plain'
+            widget: 'create-select'
+            url: 'plain-text.txt'
+            mode: 'plain'

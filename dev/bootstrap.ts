@@ -1,6 +1,4 @@
-window.CMS_MANUAL_INIT = true;
-
-window.repoFiles = {
+(window as any).repoFiles = {
   _posts: {
     '2015-02-14-this-is-a-post.md': {
       content:
@@ -69,7 +67,7 @@ for (var i = 1; i <= 20; i++) {
     date.getDate();
   var slug = dateString + '-post-number-' + i + '.md';
 
-  window.repoFiles._posts[slug] = {
+  (window as any).repoFiles._posts[slug] = {
     content:
       '---\ntitle: "This is post # ' +
       i +
@@ -94,7 +92,7 @@ for (var i = 1; i <= 5; i++) {
     date.getDate();
   var slug = dateString + '-faq-number-' + i + '.md';
 
-  window.repoFiles._faqs[slug] = {
+  (window as any).repoFiles._faqs[slug] = {
     content:
       '---\ntitle: "This FAQ item # ' +
       i +
