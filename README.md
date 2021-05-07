@@ -66,7 +66,7 @@ You can deduce the tags using the `sitemap.xml` file. For example if you want to
     mode: 'xml'
     url: 'sitemap.xml'
     query: 'loc'
-    capture: '(?<=https:\/\/www\.example\.com\/\/tags\/).+(?=\/\b)'
+    capture: '(?<=https:\/\/www\.example\.com\/tags\/).+(?=\/\b)'
     multiple: true
 ```
 
@@ -228,4 +228,4 @@ Maximum number of entries.
 
 ## Support
 
-For help with this widget, open an [issue](https://github.com/Andful/netlify-cms-widget-create-select) or ask the Netlify CMS community in [Gitter](https://gitter.im/netlify/netlifycms).
+For help with this widget, open an [issue](https://github.com/Andful/netlify-cms-widget-create-select).
