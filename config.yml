@@ -12,32 +12,31 @@ collections:
         name: 'test'
         label: 'Test'
         fields:
-          - name: 'hugo-tags-rss'
-            label: 'Hugo Tags Example Using RSS feed'
+          - name: 'html'
+            label: 'HTML Example'
+            widget: 'create-select'
+            mode: 'html'
+            url: 'example.html'
+            query: '#tag-list > .tag'
+            attribute: 'data-tag'
+            multiple: true
+
+          - name: 'hugo-rss-feed'
+            label: 'Hugo RSS feed example'
             widget: 'create-select'
             mode: 'xml'
             url: 'index.xml'
-            query: 'item title'
+            query: 'item > title'
             multiple: true
 
-          - name: 'hugo-tags-sitemap'
-            label: 'Hugo Tags Example Using sitemap'
+          - name: 'sitemap'
+            label: 'Sitemap Example'
             widget: 'create-select'
             mode: 'xml'
             url: 'sitemap.xml'
             query: 'loc'
-            capture: '(?<=https:\/\/themes\.gohugo\.io\/\/theme\/blank\/tags\/).+(?=\/)'
+            capture: '(?<=https:\/\/www\.example\.com\/tags\/).+(?=\/)'
             multiple: true
-
-          - name: 'jekyll-tags'
-            label: 'Jekyll Tags (HTML)'
-            widget: 'create-select'
-            mode: 'html'
-            url: 'https://mmistakes.github.io/so-simple-theme/tags/'
-            query: '.taxonomy-index > li > a > strong'
-            multiple: true
-            min: 1
-            max: 5
 
           - name: 'json'
             label: 'Json'
