@@ -88,7 +88,6 @@ const productionConfig = {
       },
     ],
   },
-  devtool: 'source-map',
   output: {
       path: path.resolve(__dirname, 'dist'),
       filename: '[name].js',

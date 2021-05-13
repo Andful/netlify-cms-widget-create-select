@@ -6,6 +6,7 @@ import { reactSelectStyles } from 'netlify-cms-ui-default';
 import { validations } from 'netlify-cms-lib-widgets';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import { List } from 'immutable';
 
 interface SelectOption {
   value: string,
@@ -39,7 +40,7 @@ abstract class Loader {
   }
   abstract parse(_response: Response): Promise<string[]>;
 
-  async getOptions(): Promise<Map<string, SelectOption>> {
+  async getOptions(): Promise<SelectOption[]> {
     let options: string[] = await this.parse(await this.fetchData());
 
     if (this.filter !== undefined) {
@@ -50,12 +51,8 @@ abstract class Loader {
       options = options.map(o => o.match(this.capture as RegExp)).filter(m => m !== null).map(m => (m as RegExpMatchArray)[0])
     }
     
-    options.sort((a, b) => (a > b) ? 1 : -1)
-    let result = new Map<string, SelectOption>();
-    options.forEach(o => {
-      result.set(o, {value: o,label: o});
-    })
-    return result;
+    options.sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : +1);
+    return options.map(value => ({value, label: value}));
   }
 }
 
@@ -155,9 +152,9 @@ class PlainLoader extends Loader {
 
 
 interface Props {
-  onChange: (_value: any) => void,
+  onChange: (_value: List<string> | string | undefined) => void,
   forID: string,
-  value: string[] | string,
+  value: List<string> | string,
   field: Map<string, any>,
   classNameWrapper: string,
   setActiveStyle: () => void,
@@ -168,7 +165,7 @@ interface Props {
 
 interface State {
   isLoading: boolean,
-  options: Map<string, SelectOption>,
+  options: Map<string,SelectOption>
 }
 
 export default class Control extends React.Component<Props, State> {
@@ -262,7 +259,11 @@ export default class Control extends React.Component<Props, State> {
     } else {
       throw new TypeError(`unknown mode "${mode}"`);
     }
-    let options = await loader.getOptions();
+
+    let options = new Map<string, SelectOption>();
+    (await loader.getOptions()).forEach(e => {
+      options.set(e.value, e);
+    })
     this.setState({ isLoading: false, options });
   }
 
@@ -281,19 +282,20 @@ export default class Control extends React.Component<Props, State> {
     const isClearable = !(field.get('required') || !isMultiple) as boolean;
 
     const { isLoading, options } = this.state;
-    value = value !== undefined ? (Array.isArray(value) ? value : [value]) : []
+    value = value !== undefined ? (typeof value === "string" ? List([value]) : value) : List([])
+    let labeledValues = value.map(v => {
+      let e = options.get(v);
+      if (e !== undefined) {
+        return e;
+      } else {
+        return {value: v, label: v};
+      }
+    });
 
     return (
       <Creatable
         isLoading={isLoading}
-        value={value.map(v => {
-          let e = options.get(v);
-          if (e !== undefined) {
-            return e;
-          } else {
-            return {value: v, label: v};
-          }
-        })}
+        value={[...labeledValues]}
         inputId={forID}
         defaultOptions
         options={[...options.values()]}
@@ -306,11 +308,13 @@ export default class Control extends React.Component<Props, State> {
         }}
         getOptionLabel={e => e.label}
         getOptionValue={e => e.value}
-        onChange={val => {
+        onChange={(val: readonly SelectOption[] | SelectOption | null | undefined) => {
           if (Array.isArray(val)) {
-            onChange(val.map(e => e.value))
-          } else {
+            onChange(List(val.map(e => e.value)))
+          } else if (val !== null && val !== undefined) {
             onChange((val as SelectOption).value);
+          } else {
+            onChange(undefined);
           }
         }}
         className={classNameWrapper}
