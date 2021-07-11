@@ -8,7 +8,7 @@ collections:
   - name: 'test'
     label: 'Test'
     files:
-      - file: 'test.yml'
+      - file: 'test.md'
         name: 'test'
         label: 'Test'
         fields:

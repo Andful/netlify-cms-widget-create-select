@@ -190,6 +190,7 @@ export default class Control extends React.Component<Props, State> {
     const { field, value, t } = this.props;
     const url = field.get('url');
     const mode = field.get('mode');
+    const query = field.get('query');
     const isMultiple = (field.get('multiple') || false) as boolean;
 
     if (url === undefined) {
@@ -198,7 +199,7 @@ export default class Control extends React.Component<Props, State> {
     if (mode === undefined) {
       return { error: { message: '"mode" is a required field' }}
     }
-    if (mode === 'xml' || mode === 'html') {
+    if ((mode === 'xml' || mode === 'html') && query === undefined) {
       return { error: { message: `attribute "query" must be defined in mode ${mode}` }}
     }
     const min = field.get('min');
@@ -282,20 +283,22 @@ export default class Control extends React.Component<Props, State> {
     const isClearable = !(field.get('required') || !isMultiple) as boolean;
 
     const { isLoading, options } = this.state;
-    value = value !== undefined ? (typeof value === "string" ? List([value]) : value) : List([])
-    let labeledValues = value.map(v => {
-      let e = options.get(v);
+    value = value !== undefined && value !== null ? (typeof value === "string" ? List([value]) : value) : List([])
+    let labeledValues = value
+    .filter(v => v !== undefined)
+    .map(v => {
+      let e = options.get(v as string);
       if (e !== undefined) {
         return e;
       } else {
-        return {value: v, label: v};
+        return {value: v as string, label: v as string};
       }
     });
 
     return (
       <Creatable
         isLoading={isLoading}
-        value={[...labeledValues]}
+        value={labeledValues.toArray()}
         inputId={forID}
         defaultOptions
         options={[...options.values()]}
