@@ -8,14 +8,19 @@ import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { List } from 'immutable';
 
+interface GetOptionResult {
+  options: SelectOption[],
+  noOptionMessage: string,
+}
+
 interface SelectOption {
   value: string,
   label: string,
 }
 
 interface Config {
-  mode: string,
-  url: string,
+  mode: string | undefined,
+  url: string | undefined,
   query: string | undefined,
   attribute: string | undefined,
   filter: string | undefined,
@@ -35,13 +40,37 @@ abstract class Loader {
       this.capture = new RegExp(this.config.capture);
     }
   }
-  async fetchData(): Promise<Response> {
-    return await fetch(this.config.url);
+  async fetchData(url: string): Promise<Response> {
+    return await fetch(url);
   }
   abstract parse(_response: Response): Promise<string[]>;
 
-  async getOptions(): Promise<SelectOption[]> {
-    let options: string[] = await this.parse(await this.fetchData());
+  async getOptions(): Promise<GetOptionResult> {
+    let response : Response | null = null;
+    let noOptionMessage = 'No options';
+
+    if (this.config.mode === undefined) {
+      return { options: [], noOptionMessage: `No options due to missing parameter "mode"`}
+    }
+
+    if (this.config.url === undefined) {
+      return { options: [], noOptionMessage: `No options due to missing parameter "url"`}
+    }
+
+    if ((this.config.mode === "html" || this.config.mode === "xml") && this.config.query === undefined) {
+      return { options: [], noOptionMessage: `No options due to missing parameter "query" which is required in "html" and "xml" mode`}
+    }
+
+    try {
+      response = await this.fetchData(this.config.url);
+      if (response.status !== 200) {
+        noOptionMessage = `No options due to response code ${response.status}`
+      }
+    } catch(e) {
+      noOptionMessage = `No options due to: "${e}"`
+    }
+  
+    let options: string[] = response !== null ? await this.parse(response) : [];
 
     if (this.filter !== undefined) {
       options = options.filter(o => o.match(this.filter as RegExp) !== null)
@@ -52,7 +81,7 @@ abstract class Loader {
     }
     
     options.sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : +1);
-    return options.map(value => ({value, label: value}));
+    return { options: options.map(value => ({value, label: value})), noOptionMessage};
   }
 }
 
@@ -63,9 +92,11 @@ class XMLLoader extends Loader {
       await response.text(),
       'text/xml'
     );
+
     if (this.config.query === undefined) {
-      throw new Error(`attribute "query" must be defined in mode "xml"`);
+      return [];
     }
+
     let elements = [...xmlDoc.querySelectorAll(this.config.query)];
     return elements.map(e => {
       if (this.config.attribute !== undefined) {
@@ -92,9 +123,11 @@ class HTMLLoader extends Loader {
       await response.text(),
       'text/html'
     );
+
     if (this.config.query === undefined) {
-      throw new Error(`attribute "query" must be defined in mode "html"`);
+      return [];
     }
+
     let elements = [...xmlDoc.querySelectorAll(this.config.query)];
     return elements.map(e => {
       if (this.config.attribute !== undefined) {
@@ -165,6 +198,7 @@ interface Props {
 
 interface State {
   isLoading: boolean,
+  noOptionMessage: string,
   options: Map<string,SelectOption>
 }
 
@@ -183,25 +217,13 @@ export default class Control extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.state = { isLoading: true, options: new Map() };
+    this.state = { isLoading: true, noOptionMessage: "No options", options: new Map() };
   }
 
   isValid = () => {
     const { field, value, t } = this.props;
-    const url = field.get('url');
-    const mode = field.get('mode');
-    const query = field.get('query');
     const isMultiple = (field.get('multiple') || false) as boolean;
 
-    if (url === undefined) {
-      return { error: { message: '"url" is a required field' }}
-    }
-    if (mode === undefined) {
-      return { error: { message: '"mode" is a required field' }}
-    }
-    if ((mode === 'xml' || mode === 'html') && query === undefined) {
-      return { error: { message: `attribute "query" must be defined in mode ${mode}` }}
-    }
     const min = field.get('min');
     const max = field.get('max');
 
@@ -231,13 +253,6 @@ export default class Control extends React.Component<Props, State> {
     const filter = field.get('filter');
     const capture = field.get('capture');
 
-    if (url === undefined) {
-      throw new TypeError('"url" is a required field');
-    }
-    if (mode === undefined) {
-      throw new TypeError('"mode" is a required field');
-    }
-
     const config: Config = {
       url,
       mode,
@@ -258,14 +273,15 @@ export default class Control extends React.Component<Props, State> {
     } else if (mode === 'plain') {
       loader = new PlainLoader(config);
     } else {
-      throw new TypeError(`unknown mode "${mode}"`);
+      loader = new PlainLoader(config);
     }
 
-    let options = new Map<string, SelectOption>();
-    (await loader.getOptions()).forEach(e => {
-      options.set(e.value, e);
+    let optionsMap = new Map<string, SelectOption>();
+    let {options, noOptionMessage} = await loader.getOptions();
+    options.forEach(e => {
+      optionsMap.set(e.value, e);
     })
-    this.setState({ isLoading: false, options });
+    this.setState({ isLoading: false, noOptionMessage, options: optionsMap });
   }
 
   render() {
@@ -282,13 +298,13 @@ export default class Control extends React.Component<Props, State> {
     const isMultiple = (field.get('multiple') || false) as boolean;
     const isClearable = !(field.get('required') || !isMultiple) as boolean;
 
-    const { isLoading, options } = this.state;
+    const { isLoading, noOptionMessage , options } = this.state;
     value = value !== undefined && value !== null ? (typeof value === "string" ? List([value]) : value) : List([])
     let labeledValues = value
     .filter(v => v !== undefined)
     .map(v => {
       let e = options.get(v as string);
-      if (e !== undefined) {
+      if (e !== undefined && e !== null) {
         return e;
       } else {
         return {value: v as string, label: v as string};
@@ -323,6 +339,7 @@ export default class Control extends React.Component<Props, State> {
         className={classNameWrapper}
         onFocus={setActiveStyle}
         onBlur={setInactiveStyle}
+        noOptionsMessage={() => noOptionMessage}
         styles={reactSelectStyles}
         isMulti={isMultiple}
         isClearable={isClearable}

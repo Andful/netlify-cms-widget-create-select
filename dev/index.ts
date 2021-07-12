@@ -10,5 +10,4 @@ CMS.registerWidget(
   CreatableSelectWidget.CreatableSelectPreview
 );
 
-console.log("test 123")
 
