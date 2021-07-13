@@ -192,7 +192,7 @@ Query to obtain the data points.
 
 Attribute to use as value for each data points.
 * With `xml` or `html` modes this is an attribute of the element e.g. `class`, `id`, `data-attr`. If not sepcified the `textContent` will be used instead.
-* With `mode: json` query is a dot separated chain of attributes e.g. `query: "name.firstName"`. If not specified the root object will be used. Note that the query should give a string type.
+* With `mode: json` query is a dot separated chain of attributes e.g. `attribute: "name.firstName"`. If not specified the root object will be used. Note that if the attribute does not give a string type the `JSON.stringify` of the json will be used.
 * With `plain` mode this field will be ignored.
 ---
 
