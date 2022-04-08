@@ -1,18 +1,18 @@
 {
+  "root": true,
   "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "parserOptions": {
     "ecmaVersion": 2017,
     "sourceType": "module"
   },
-  "extends": ["eslint:recommended", "plugin:react/recommended"],
-  "rules": {
-    "eqeqeq": "warn",
-    "no-fallthrough": "off",
-    "no-shadow": "warn",
-    "arrow-body-style": ["warn", "as-needed"],
-    "arrow-parens": ["warn", "as-needed"],
-    "no-var": "error"
-  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "globals": {
     "CMS": true
   },

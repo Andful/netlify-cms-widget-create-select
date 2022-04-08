@@ -1,26 +1,21 @@
+
+/// <reference path="declarations.d.ts"/>
+
 import React from 'react';
-import { Creatable } from 'react-select';
-// @ts-ignore
+import { GroupBase } from 'react-select';
+import Creatable, { CreatableProps } from 'react-select/creatable';
 import { reactSelectStyles } from 'netlify-cms-ui-default';
-// @ts-ignore
 import { validations } from 'netlify-cms-lib-widgets';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { fromJS, List } from 'immutable';
 
+const CreatableSpecialized: (props: CreatableProps<string, boolean, GroupBase<string>>) => React.ReactElement = Creatable;
 
 class NoOptionsError extends Error {
   constructor(message: string) {
     super(message);
   }
-  get isNoOptionsError(): boolean {
-    return true;
-  }
-}
-
-interface SelectOption {
-  value: string;
-  label: string;
 }
 
 interface Config {
@@ -45,12 +40,12 @@ abstract class Loader {
     }
   }
 
-  async getOptions(): Promise<SelectOption[]> {
+  async getOptions(): Promise<string[]> {
     if (this.config.url === undefined) {
       throw new NoOptionsError('No options due to missing field "url"');
     }
 
-    let response = await fetch(this.config.url);
+    const response = await fetch(this.config.url);
     if (response.status !== 200) {
       throw new NoOptionsError(
         `No options due to response status ${response.status}`
@@ -68,7 +63,7 @@ abstract class Loader {
         .map(m => (m as RegExpMatchArray)[0]);
     }
 
-    return options.map(v => ({ value: v, label: v }));
+    return options;
   }
 
   abstract getLoaderOptions(_response: Response): Promise<string[]>;
@@ -76,8 +71,8 @@ abstract class Loader {
 
 class XMLLoader extends Loader {
   async getLoaderOptions(response: Response): Promise<string[]> {
-    let parser = new DOMParser();
-    let xmlDoc = parser.parseFromString(await response.text(), 'text/xml');
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(await response.text(), 'text/xml');
 
     if (this.config.query === undefined) {
       throw new NoOptionsError(
@@ -85,17 +80,17 @@ class XMLLoader extends Loader {
       );
     }
 
-    let elements = [...xmlDoc.querySelectorAll(this.config.query)];
-    let options = elements
+    const elements = [...xmlDoc.querySelectorAll(this.config.query)];
+    const options = elements
       .map(e => {
         if (this.config.attribute !== undefined) {
-          let value = e.getAttribute(this.config.attribute);
+          const value = e.getAttribute(this.config.attribute);
           if (value === null) {
             return undefined;
           }
           return value as string;
         } else {
-          let value = e.textContent;
+          const value = e.textContent;
           if (value === null) {
             return undefined;
           }
@@ -110,8 +105,8 @@ class XMLLoader extends Loader {
 
 class HTMLLoader extends Loader {
   async getLoaderOptions(response: Response): Promise<string[]> {
-    let parser = new DOMParser();
-    let htmlDoc = parser.parseFromString(await response.text(), 'text/html');
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(await response.text(), 'text/html');
 
     if (this.config.query === undefined) {
       throw new NoOptionsError(
@@ -119,17 +114,17 @@ class HTMLLoader extends Loader {
       );
     }
 
-    let elements = [...htmlDoc.querySelectorAll(this.config.query)];
-    let options = elements
+    const elements = [...htmlDoc.querySelectorAll(this.config.query)];
+    const options = elements
       .map(e => {
         if (this.config.attribute !== undefined) {
-          let value = e.getAttribute(this.config.attribute);
+          const value = e.getAttribute(this.config.attribute);
           if (value === null) {
             return undefined;
           }
           return value as string;
         } else {
-          let value = e.textContent;
+          const value = e.textContent;
           if (value === null) {
             return undefined;
           }
@@ -144,7 +139,7 @@ class HTMLLoader extends Loader {
 
 class JSONLoader extends Loader {
   async getLoaderOptions(response: Response): Promise<string[]> {
-    let originalObj = await response.json();
+    const originalObj = await response.json();
 
     let obj = fromJS(originalObj);
 
@@ -153,13 +148,12 @@ class JSONLoader extends Loader {
     }
     if (!List.isList(obj)) {
       throw new NoOptionsError(
-        `No options due to "${
-          this.config.query === undefined ? '.' : this.config.query
+        `No options due to "${this.config.query === undefined ? '.' : this.config.query
         }" not being an array in json ${JSON.stringify(originalObj)}`
       );
     }
     obj = obj as List<any>;
-    let options = obj
+    const options = obj
       .map((e: any) => {
         if (this.config.attribute !== undefined) {
           return e.getIn(this.config.attribute.split('.'));
@@ -180,8 +174,8 @@ class JSONLoader extends Loader {
 
 class PlainLoader extends Loader {
   async getLoaderOptions(response: Response): Promise<string[]> {
-    let text = await response.text();
-    let options = text.split('\n').filter(e => e !== '');
+    const text = await response.text();
+    const options = text.split('\n').filter(e => e !== '');
     return options;
   }
 }
@@ -207,7 +201,7 @@ interface Props {
 interface State {
   isLoading: boolean;
   hasNoOptionMessage: string | null;
-  options: Map<string, SelectOption>;
+  options: Set<string>;
 }
 
 export default class Control extends React.Component<Props, State> {
@@ -228,7 +222,7 @@ export default class Control extends React.Component<Props, State> {
     this.state = {
       isLoading: true,
       hasNoOptionMessage: null,
-      options: new Map(),
+      options: new Set(),
     };
   }
 
@@ -239,7 +233,7 @@ export default class Control extends React.Component<Props, State> {
     const min = field.get('min');
     const max = field.get('max');
 
-    if (!isMultiple) {
+    if (!isMultiple || typeof value === 'string') {
       return { error: false };
     }
 
@@ -304,27 +298,23 @@ export default class Control extends React.Component<Props, State> {
       loader = new NoModeLoader(config);
     }
 
-    let optionsMap = new Map<string, SelectOption>();
     try {
-      let options = await loader.getOptions();
-      options.forEach(e => {
-        optionsMap.set(e.value, e);
-      });
-      this.setState({ isLoading: false, hasNoOptionMessage: null, options: optionsMap });
-    } catch(e) {
-      if (e.isNoOptionsError) {
-        this.setState({ isLoading: false, hasNoOptionMessage: e.message, options: new Map() });
+      const options = new Set(await loader.getOptions());
+      this.setState({ isLoading: false, hasNoOptionMessage: null, options });
+    } catch (e: unknown | NoOptionsError) {
+      if (e instanceof NoOptionsError) {
+        this.setState({ isLoading: false, hasNoOptionMessage: e.message, options: new Set() });
       } else {
-        this.setState({ isLoading: false, hasNoOptionMessage: `No options due to: "${e}"`, options: new Map() });
+        this.setState({ isLoading: false, hasNoOptionMessage: `No options due to: "${e}"`, options: new Set() });
       }
-      
+
     }
-    
+
   }
 
   render() {
-    let {
-      value,
+    let { value } = this.props;
+    const {
       field,
       forID,
       classNameWrapper,
@@ -337,46 +327,28 @@ export default class Control extends React.Component<Props, State> {
     const isClearable = !(field.get('required') || !isMultiple) as boolean;
 
     const { isLoading, hasNoOptionMessage, options } = this.state;
+
     value =
       value !== undefined && value !== null
         ? typeof value === 'string'
           ? List([value])
           : value
         : List([]);
-    let labeledValues = value
-      .filter(v => v !== undefined)
-      .map(v => {
-        let e = options.get(v as string);
-        if (e !== undefined && e !== null) {
-          return e;
-        } else {
-          return { value: v as string, label: v as string };
-        }
-      });
 
     return (
-      <Creatable
+      <CreatableSpecialized
         isLoading={isLoading}
-        value={labeledValues.toArray()}
+        value={value.toArray()}
         inputId={forID}
-        defaultOptions
         options={[...options.values()]}
-        getNewOptionData={e => {
-          if (value.includes(e)) {
-            return { value: e, label: e };
-          } else {
-            return { value: e, label: `Create "${e}"` };
-          }
-        }}
-        getOptionLabel={e => e.label}
-        getOptionValue={e => e.value}
-        onChange={(
-          val: readonly SelectOption[] | SelectOption | null | undefined
-        ) => {
-          if (Array.isArray(val)) {
-            onChange(List(val.map(e => e.value)));
+        getNewOptionData={e => e}
+        getOptionLabel={e => (options.has(e) || value.includes(e)) ? e : `Create "${e}"`}
+        getOptionValue={e => e}
+        onChange={(val) => {
+          if (typeof val === 'string') {
+            onChange(val);
           } else if (val !== null && val !== undefined) {
-            onChange((val as SelectOption).value);
+            onChange(List(val));
           } else {
             onChange(undefined);
           }

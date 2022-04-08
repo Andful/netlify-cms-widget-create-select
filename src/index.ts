@@ -6,6 +6,4 @@ if (typeof window !== 'undefined') {
   (<any>window).CreatableSelectPreview = CreatableSelectPreview;
 }
 
-const exportObject = { CreatableSelectControl, CreatableSelectPreview };
-
-export default exportObject;
+export { CreatableSelectControl, CreatableSelectPreview };
