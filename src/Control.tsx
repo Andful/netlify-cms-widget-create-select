@@ -1,9 +1,9 @@
 import React from 'react';
-import { Creatable } from 'react-select';
+import Creatable from 'react-select/creatable';
 // @ts-ignore
-import { reactSelectStyles } from 'netlify-cms-ui-default';
+import { reactSelectStyles } from 'decap-cms-ui-default';
 // @ts-ignore
-import { validations } from 'netlify-cms-lib-widgets';
+import { validations } from 'decap-cms-lib-widgets';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { fromJS, List } from 'immutable';
@@ -311,7 +311,7 @@ export default class Control extends React.Component<Props, State> {
         optionsMap.set(e.value, e);
       });
       this.setState({ isLoading: false, hasNoOptionMessage: null, options: optionsMap });
-    } catch(e) {
+    } catch(e: any) {
       if (e.isNoOptionsError) {
         this.setState({ isLoading: false, hasNoOptionMessage: e.message, options: new Map() });
       } else {
@@ -359,7 +359,7 @@ export default class Control extends React.Component<Props, State> {
         isLoading={isLoading}
         value={labeledValues.toArray()}
         inputId={forID}
-        defaultOptions
+        //defaultOptions
         options={[...options.values()]}
         getNewOptionData={e => {
           if (value.includes(e)) {
@@ -368,8 +368,8 @@ export default class Control extends React.Component<Props, State> {
             return { value: e, label: `Create "${e}"` };
           }
         }}
-        getOptionLabel={e => e.label}
-        getOptionValue={e => e.value}
+        getOptionLabel={(e: SelectOption) => e.label}
+        getOptionValue={(e: SelectOption) => e.value}
         onChange={(
           val: readonly SelectOption[] | SelectOption | null | undefined
         ) => {
