@@ -7,7 +7,6 @@ import { validations } from 'decap-cms-lib-widgets';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { fromJS, List } from 'immutable';
-import { ColourOption, colourOptions } from './data';
 
 class NoOptionsError extends Error {
   constructor(message: string) {
@@ -353,25 +352,6 @@ export default class Control extends React.Component<Props, State> {
           return { value: v as string, label: v as string };
         }
       });
-
-      /*
-const filterColors = (inputValue: string) => {
-  return colourOptions.filter((i) =>
-    i.label.toLowerCase().includes(inputValue.toLowerCase())
-  );
-};
-
-const promiseOptions = (inputValue: string) =>
-  new Promise<ColourOption[]>((resolve) => {
-    setTimeout(() => {
-      resolve(filterColors(inputValue));
-    }, 1000);
-  });
-
-return (
-  <CreatableSelect isMulti options={colourOptions} />
-);
-*/
 
     return (
       <CreatableSelect 
