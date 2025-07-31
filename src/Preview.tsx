@@ -2,13 +2,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Map } from 'immutable';
+// @ts-ignore
+import { CmsWidgetPreviewProps } from 'decap-cms-lib-widgets';
 
 interface PreviewProps {
   field: Map<string, any>,
   value: string[] | string,
 }
 
-export default function Preview(props: PreviewProps) {
+const Preview: React.FC<CmsWidgetPreviewProps<unknown>> = props => {
   const { field, value } = props;
   let displayValue = props.value;
 
@@ -18,7 +20,4 @@ export default function Preview(props: PreviewProps) {
   return <div>{displayValue}</div>;
 }
 
-Preview.propTypes = {
-  value: PropTypes.node,
-  field: ImmutablePropTypes.map,
-};
+export default Preview;

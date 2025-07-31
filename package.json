@@ -1,18 +1,18 @@
 {
-  "name": "netlify-cms-widget-create-select",
-  "description": "A simple create select widget for netlify-cms which allows creating entries. The create select widget's entries are up to date to the last website build. The create select can be populated by plain text file, json file, RSS feed or HTML page.",
+  "name": "decap-cms-widget-create-select",
+  "description": "A simple create select widget for decap-cms which allows creating entries. The create select widget's entries are up to date to the last website build. The create select can be populated by plain text file, json file, RSS feed or HTML page.",
   "keywords": [
-    "netlify",
-    "netlify-cms",
-    "netlify-cms-widget",
-    "netlify-cms-widget-create-select",
+    "decap",
+    "decap-cms",
+    "decap-cms-widget",
+    "decap-cms-widget-create-select",
     "cms",
     "widget",
     "starter",
     "boilerplate"
   ],
   "version": "1.1.5",
-  "homepage": "https://github.com/Andful/netlify-cms-widget-create-select",
+  "homepage": "https://github.com/Andful/decap-cms-widget-create-select",
   "license": "MIT",
   "main": "dist/index.js",
   "devDependencies": {
@@ -25,28 +25,26 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@types/lodash": "^4.14.168",
+    "@types/prop-types": "^15.7.15",
     "@types/react-select": "^2.0.19",
-    "@typescript-eslint/parser": "^4.22.1",
+    "@typescript-eslint/parser": "^8.38.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.0",
     "copy-webpack-plugin": "6",
     "css-loader": "^5.2.4",
-    "eslint": "^5.15.3",
-    "eslint-loader": "^2.1.2",
-    "eslint-plugin-react": "^7.12.4",
+    "decap-cms": "^3.0.0",
+    "decap-cms-lib-widgets": "^3.0.0",
+    "decap-cms-ui-default": "^3.0.0",
+    "eslint-plugin-react": "^7.37.5",
     "html-webpack-plugin": "^5.3.1",
     "immutable": "^3.7.6",
     "loader-utils": "^2.0.0",
-    "netlify-cms": "^2.10.122",
-    "netlify-cms-lib-widgets": "^1.6.1",
-    "netlify-cms-ui-default": "^2.13.0",
     "path-browserify": "^1.0.1",
     "prettier": "^1.16.4",
     "prettier-loader": "^2.1.1",
-    "prop-types": "^15.6.1",
-    "react": "^16.3.2",
+    "prop-types": "^15.7.2",
     "react-immutable-proptypes": "^2.1.0",
-    "react-select": "^2.4.2",
+    "react-select": "5.10.1",
     "source-map-loader": "^0.2.3",
     "style-loader": "^0.20.3",
     "ts-loader": "^9.1.2",
@@ -55,9 +53,12 @@
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2"
   },
-  "dependencies": {},
   "peerDependencies": {
-    "react": "^16.12.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "resolutions": {
+    "react-redux": "^7.2.0"
   },
   "scripts": {
     "start": "webpack serve",
@@ -65,5 +66,9 @@
     "build": "NODE_ENV=production webpack",
     "prepublishOnly": "npm run build",
     "test": "echo 0"
+  },
+  "dependencies": {
+    "@types/immutable": "^3.8.6",
+    "@types/react-immutable-proptypes": "^2.1.3"
   }
 }

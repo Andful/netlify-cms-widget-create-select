@@ -1,7 +1,7 @@
 import './bootstrap';
 // @ts-ignore
-import CMS, { init } from 'netlify-cms';
-import 'netlify-cms/dist/cms.css';
+import CMS from 'decap-cms-app';
+import 'decap-cms/dist/cms.css';
 import CreatableSelectWidget from '../src/index';
 
 CMS.registerWidget(
@@ -9,5 +9,7 @@ CMS.registerWidget(
   CreatableSelectWidget.CreatableSelectControl,
   CreatableSelectWidget.CreatableSelectPreview
 );
+
+CMS.init();
 
 

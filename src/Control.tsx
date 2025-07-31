@@ -1,13 +1,12 @@
 import React from 'react';
-import { Creatable } from 'react-select';
+//@ts-ignore
+import CreatableSelect from 'react-select/creatable';
+import { reactSelectStyles } from 'decap-cms-ui-default';
 // @ts-ignore
-import { reactSelectStyles } from 'netlify-cms-ui-default';
-// @ts-ignore
-import { validations } from 'netlify-cms-lib-widgets';
+import { validations, CmsWidgetControlProps } from 'decap-cms-lib-widgets';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { fromJS, List } from 'immutable';
-
 
 class NoOptionsError extends Error {
   constructor(message: string) {
@@ -192,12 +191,7 @@ class NoModeLoader extends Loader {
   }
 }
 
-interface Props {
-  onChange: (_value: List<string> | string | undefined) => void;
-  forID: string;
-  value: List<string> | string;
-  field: Map<string, any>;
-  classNameWrapper: string;
+type Props = CmsWidgetControlProps<List<string> | string | undefined> & {
   setActiveStyle: () => void;
   setInactiveStyle: () => void;
   hasActiveStyle: () => void;
@@ -311,7 +305,7 @@ export default class Control extends React.Component<Props, State> {
         optionsMap.set(e.value, e);
       });
       this.setState({ isLoading: false, hasNoOptionMessage: null, options: optionsMap });
-    } catch(e) {
+    } catch(e: any) {
       if (e.isNoOptionsError) {
         this.setState({ isLoading: false, hasNoOptionMessage: e.message, options: new Map() });
       } else {
@@ -324,7 +318,7 @@ export default class Control extends React.Component<Props, State> {
 
   render() {
     let {
-      value,
+      value: _value,
       field,
       forID,
       classNameWrapper,
@@ -337,11 +331,11 @@ export default class Control extends React.Component<Props, State> {
     const isClearable = !(field.get('required') || !isMultiple) as boolean;
 
     const { isLoading, hasNoOptionMessage, options } = this.state;
-    value =
-      value !== undefined && value !== null
-        ? typeof value === 'string'
-          ? List([value])
-          : value
+    let value: List<string> =
+    _value !== undefined && _value !== null
+        ? typeof _value === 'string'
+          ? List([_value])
+          : _value
         : List([]);
     let labeledValues = value
       .filter(v => v !== undefined)
@@ -355,21 +349,21 @@ export default class Control extends React.Component<Props, State> {
       });
 
     return (
-      <Creatable
+      <CreatableSelect 
         isLoading={isLoading}
         value={labeledValues.toArray()}
         inputId={forID}
-        defaultOptions
+        //defaultOptions
         options={[...options.values()]}
-        getNewOptionData={e => {
+        getNewOptionData={(e: string) => {
           if (value.includes(e)) {
             return { value: e, label: e };
           } else {
             return { value: e, label: `Create "${e}"` };
           }
         }}
-        getOptionLabel={e => e.label}
-        getOptionValue={e => e.value}
+        getOptionLabel={(e: SelectOption) => e.label}
+        getOptionValue={(e: SelectOption) => e.value}
         onChange={(
           val: readonly SelectOption[] | SelectOption | null | undefined
         ) => {
