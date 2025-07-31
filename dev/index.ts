@@ -1,6 +1,6 @@
 import './bootstrap';
 // @ts-ignore
-import CMS, { init } from 'decap-cms';
+import CMS from 'decap-cms-app';
 import 'decap-cms/dist/cms.css';
 import CreatableSelectWidget from '../src/index';
 
@@ -9,5 +9,7 @@ CMS.registerWidget(
   CreatableSelectWidget.CreatableSelectControl,
   CreatableSelectWidget.CreatableSelectPreview
 );
+
+CMS.init();
 
 

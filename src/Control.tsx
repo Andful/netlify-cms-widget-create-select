@@ -1,9 +1,9 @@
 import React from 'react';
+//@ts-ignore
 import CreatableSelect from 'react-select/creatable';
-// @ts-ignore
 import { reactSelectStyles } from 'decap-cms-ui-default';
 // @ts-ignore
-import { validations } from 'decap-cms-lib-widgets';
+import { validations, CmsWidgetControlProps } from 'decap-cms-lib-widgets';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { fromJS, List } from 'immutable';
@@ -191,12 +191,7 @@ class NoModeLoader extends Loader {
   }
 }
 
-interface Props {
-  onChange: (_value: List<string> | string | undefined) => void;
-  forID: string;
-  value: List<string> | string;
-  field: Map<string, any>;
-  classNameWrapper: string;
+type Props = CmsWidgetControlProps<List<string> | string | undefined> & {
   setActiveStyle: () => void;
   setInactiveStyle: () => void;
   hasActiveStyle: () => void;
@@ -323,7 +318,7 @@ export default class Control extends React.Component<Props, State> {
 
   render() {
     let {
-      value,
+      value: _value,
       field,
       forID,
       classNameWrapper,
@@ -336,11 +331,11 @@ export default class Control extends React.Component<Props, State> {
     const isClearable = !(field.get('required') || !isMultiple) as boolean;
 
     const { isLoading, hasNoOptionMessage, options } = this.state;
-    value =
-      value !== undefined && value !== null
-        ? typeof value === 'string'
-          ? List([value])
-          : value
+    let value: List<string> =
+    _value !== undefined && _value !== null
+        ? typeof _value === 'string'
+          ? List([_value])
+          : _value
         : List([]);
     let labeledValues = value
       .filter(v => v !== undefined)
@@ -360,7 +355,7 @@ export default class Control extends React.Component<Props, State> {
         inputId={forID}
         //defaultOptions
         options={[...options.values()]}
-        getNewOptionData={e => {
+        getNewOptionData={(e: string) => {
           if (value.includes(e)) {
             return { value: e, label: e };
           } else {
